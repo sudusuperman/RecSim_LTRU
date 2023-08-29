@@ -654,7 +654,9 @@ def create_environment(env_config):
       document_sampler,
       env_config['num_candidates'],
       env_config['slate_size'],
-      resample_documents=env_config['resample_documents'])
+      resample_documents=env_config['resample_documents'],
+      training_data_loader='[some data loader]'
+  )
 
   return recsim_gym.RecSimGymEnv(ievenv, clicked_watchtime_reward,
                                  utils.aggregate_video_cluster_metrics,

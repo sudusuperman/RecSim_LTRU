@@ -61,7 +61,9 @@ class AbstractEnvironment(object):
                document_sampler,
                num_candidates,
                slate_size,
-               resample_documents=True):
+               resample_documents=True,
+               training_data_loader=None,
+               ):
     """Initializes a new simulation environment.
 
     Args:
@@ -84,6 +86,10 @@ class AbstractEnvironment(object):
     assert (slate_size <= num_candidates
            ), 'Slate size %d cannot be larger than number of candidates %d' % (
                slate_size, num_candidates)
+
+    # Du initialize user_model and document_sampler by training
+    if training_data_loader != None:
+      self.train(training_data_loader)
 
   def _do_resample_documents(self):
     # TODO(sanmit): eventually model this creation with content creators.
@@ -134,6 +140,15 @@ class AbstractEnvironment(object):
       doc_obs: A list of observations of the documents
       responses: A list of AbstractResponse objects for each item in the slate
       done: A boolean indicating whether the episode has terminated
+    """
+
+  # Du: interface for sampler initialization
+  def train(self, data_loader):
+    """Train user model and document embedding from real data. 
+      With respect to the user modeling in user_model, it trains the parameters in user_model and document_sampler
+
+    Args:
+      data_loader: A data loader that read from raw data      
     """
 
 
@@ -218,6 +233,14 @@ class SingleUserEnvironment(AbstractEnvironment):
 
     return (user_obs, self._current_documents, responses, done)
 
+  # Du: interface for sampler initialization
+  def train(self, data_loader):
+    """Train user model and document embedding from real data. 
+      With respect to the user modeling in user_model, it trains the parameters in user_model and document_sampler
+
+    Args:
+      data_loader: A data loader that read from raw data      
+    """
 
 Environment = SingleUserEnvironment  # for backwards compatability
 
@@ -328,3 +351,12 @@ class MultiUserEnvironment(AbstractEnvironment):
         self._candidate_set.create_observation())
 
     return (all_user_obs, self._current_documents, all_responses, done)
+
+  # Du: interface for sampler initialization
+  def train(self, data_loader):
+    """Train user model and document embedding from real data. 
+      With respect to the user modeling in user_model, it trains the parameters in user_model and document_sampler
+
+    Args:
+      data_loader: A data loader that read from raw data      
+    """
